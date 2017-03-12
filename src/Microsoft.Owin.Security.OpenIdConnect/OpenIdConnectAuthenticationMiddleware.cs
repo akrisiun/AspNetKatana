@@ -94,7 +94,9 @@ namespace Microsoft.Owin.Security.OpenIdConnect
                     HttpClient httpClient = new HttpClient(ResolveHttpMessageHandler(Options));
                     httpClient.Timeout = Options.BackchannelTimeout;
                     httpClient.MaxResponseContentBufferSize = 1024 * 1024 * 10; // 10 MB
-                    Options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(Options.MetadataAddress, httpClient);
+                    Options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                        Options.MetadataAddress ?? Environment.GetEnvironmentVariable("USERDOMAIN"), 
+                        httpClient);
                 }
             }
         }

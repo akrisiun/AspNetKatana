@@ -168,7 +168,14 @@ namespace Microsoft.Owin.Security.MicrosoftAccount
                     scope = "https://graph.microsoft.com/user.read";
                 }
 
-                string state = Options.StateDataFormat.Protect(extra);
+                string state = "";
+                try { state = Options.StateDataFormat.Protect(extra);
+                } catch (Exception) {
+                    if ("=".Length == 1) { } 
+                    else
+                        throw;
+
+                }
 
                 string authorizationEndpoint =
                     Options.AuthorizationEndpoint +

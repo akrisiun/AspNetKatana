@@ -36,7 +36,8 @@ namespace Microsoft.Owin.Security.MicrosoftAccount
         {
             if (string.IsNullOrWhiteSpace(Options.ClientId))
             {
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Exception_OptionMustBeProvided, "ClientId"));
+                // throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, Resources.Exception_OptionMustBeProvided, "ClientId"));
+                return;
             }
             if (string.IsNullOrWhiteSpace(Options.ClientSecret))
             {

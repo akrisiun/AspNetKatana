@@ -15,8 +15,8 @@ using Microsoft.Owin.Host.SystemWeb;
 using Microsoft.Owin.Logging;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
-using Microsoft.Owin.Security.Facebook;
-using Microsoft.Owin.Security.Google;
+//using Microsoft.Owin.Security.Facebook;
+//using Microsoft.Owin.Security.Google;
 using Microsoft.Owin.Security.Infrastructure;
 using Microsoft.Owin.Security.OAuth;
 using Microsoft.Owin.Security.WsFederation;
@@ -63,22 +63,22 @@ namespace Katana.Sandbox.WebServer
             });
 
             // https://developers.facebook.com/apps/
-            app.UseFacebookAuthentication(new FacebookAuthenticationOptions
-            {
-                AppId = Environment.GetEnvironmentVariable("facebook:appid"),
-                AppSecret = Environment.GetEnvironmentVariable("facebook:appsecret"),
-                Scope = { "email" },
-                Fields = { "name", "email" },
-                CookieManager = new SystemWebCookieManager()
-            });
+            //app.UseFacebookAuthentication(new FacebookAuthenticationOptions
+            //{
+            //    AppId = Environment.GetEnvironmentVariable("facebook:appid"),
+            //    AppSecret = Environment.GetEnvironmentVariable("facebook:appsecret"),
+            //    Scope = { "email" },
+            //    Fields = { "name", "email" },
+            //    CookieManager = new SystemWebCookieManager()
+            //});
 
-            // https://console.developers.google.com/apis/credentials
-            // https://developers.google.com/identity/protocols/OAuth2WebServer
-            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            {
-                ClientId = Environment.GetEnvironmentVariable("google:clientid"),
-                ClientSecret = Environment.GetEnvironmentVariable("google:clientsecret"),
-            });
+            //// https://console.developers.google.com/apis/credentials
+            //// https://developers.google.com/identity/protocols/OAuth2WebServer
+            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            //{
+            //    ClientId = Environment.GetEnvironmentVariable("google:clientid"),
+            //    ClientSecret = Environment.GetEnvironmentVariable("google:clientsecret"),
+            //});
 
             //// Flow to get user identifier in OpenID for migration to OAuth 2.0
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
@@ -107,27 +107,33 @@ namespace Katana.Sandbox.WebServer
 
             // https://apps.twitter.com/
             // https://dev.twitter.com/web/sign-in/implementing
-            app.UseTwitterAuthentication(Environment.GetEnvironmentVariable("twitter:consumerkey"), Environment.GetEnvironmentVariable("twitter:consumersecret"));
+            //app.UseTwitterAuthentication(Environment.GetEnvironmentVariable("twitter:consumerkey"), Environment.GetEnvironmentVariable("twitter:consumersecret"));
 
             // https://azure.microsoft.com/en-us/documentation/articles/active-directory-v2-app-registration/
-            app.UseMicrosoftAccountAuthentication(Environment.GetEnvironmentVariable("microsoftaccount:clientid"), Environment.GetEnvironmentVariable("microsoftaccount:clientsecret"));
+            app.UseMicrosoftAccountAuthentication(
+                System.Configuration.ConfigurationManager.AppSettings.Get("microsoftaccount:clientid"),
+                System.Configuration.ConfigurationManager.AppSettings.Get("microsoftaccount:clientsecret"));
+                //Environment.GetEnvironmentVariable("microsoftaccount:clientid"),
+                //Environment.GetEnvironmentVariable("microsoftaccount:clientsecret"));
 
             // app.UseAspNetAuthSession();
-            /*
             app.UseCookieAuthentication(new CookieAuthenticationOptions()
             {
-                SessionStore = new InMemoryAuthSessionStore()
+                SessionStore = new InMemoryAuthSessionStore(),
+                CookieName = "ASP.NET_SessionId"
             });
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
-            */
-            /*
+            // */
+
+            /* */
             app.UseWsFederationAuthentication(new WsFederationAuthenticationOptions()
             {
-                Wtrealm = "http://Katana.Sandbox.WebServer",
+                Wtrealm = "https://localhost", // Katana.Sandbox.WebServer",
                 MetadataAddress = "https://login.windows.net/cdc690f9-b6b8-4023-813a-bae7143d1f87/FederationMetadata/2007-06/FederationMetadata.xml",
             });
-            */
-
+            // */
+            
+            /*
             app.UseOpenIdConnectAuthentication(new Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions()
             {
                 Authority = Environment.GetEnvironmentVariable("oidc:authority"),
@@ -135,11 +141,14 @@ namespace Katana.Sandbox.WebServer
                 RedirectUri = "https://localhost:44318/",
                 CookieManager = new SystemWebCookieManager()
             });
+            */
 
+            //
             /*
             app.UseOAuthBearerAuthentication(new OAuthBearerAuthenticationOptions
             {
             });
+            */
 
             // CORS support
             app.Use(async (context, next) =>
@@ -172,6 +181,7 @@ namespace Katana.Sandbox.WebServer
                 // continue executing pipeline
                 await next();
             });
+            //  */
 
             app.UseOAuthAuthorizationServer(new OAuthAuthorizationServerOptions
             {
@@ -198,7 +208,7 @@ namespace Katana.Sandbox.WebServer
                     OnReceive = ReceiveRefreshToken,
                 }
             });
-            */
+            /* */
             app.Map("/signout", map =>
             {
                 map.Run(context =>
@@ -210,6 +220,7 @@ namespace Katana.Sandbox.WebServer
                     return Task.FromResult(0);
                 });
             });
+
             app.Map("/challenge", map =>
             {
                 map.Run(context =>
@@ -218,6 +229,23 @@ namespace Katana.Sandbox.WebServer
                     return Task.FromResult(0);
                 });
             });
+
+            app.Map("/netversion.aspx", map =>
+            {
+                map.Run(c =>
+                {
+                    var http = System.Web.HttpContext.Current;
+                    if (http != null)
+                    {
+                        var handler = http.Handler;
+                        if (handler != null)
+                            handler.ProcessRequest(http);
+                    }
+                    return Task.FromResult(0);
+                });
+            });
+
+
             /*
             app.Map("/Account/Login", map =>
             {

@@ -66,7 +66,8 @@ namespace FunctionalTests.Facts.Security
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = "Application",
-                CookieName = ".AspNet.Application",
+                // CookieName = ".AspNet.Application",
+                CookieName = "ASP.NET_SessionId",
                 LoginPath = new PathString("/Account/LogOn"),
                 LogoutPath = new PathString("/Account/Logout")
             });

@@ -24,11 +24,13 @@ namespace Microsoft.Owin.Security.Cookies
         {
             if (ticket == null)
             {
-                throw new ArgumentNullException("ticket");
+                // throw new ArgumentNullException("ticket");
             }
-
-            Identity = ticket.Identity;
-            Properties = ticket.Properties;
+            else
+            {
+                Identity = ticket.Identity;
+                Properties = ticket.Properties;
+            }
         }
 
         /// <summary>

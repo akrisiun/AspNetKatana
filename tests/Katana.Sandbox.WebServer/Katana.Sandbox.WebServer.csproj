@@ -66,7 +66,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -116,17 +115,9 @@
       <Project>{c225eb2f-e7a7-463f-b058-1705f204978e}</Project>
       <Name>Microsoft.Owin.Hosting</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Owin.Security.Facebook\Microsoft.Owin.Security.Facebook.csproj">
-      <Project>{F6F1D34F-3AF6-41DD-B493-60899F959BBA}</Project>
-      <Name>Microsoft.Owin.Security.Facebook</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Owin.Security.Cookies\Microsoft.Owin.Security.Cookies.csproj">
       <Project>{2fb9342f-ca85-4903-8667-45ed64ad25a6}</Project>
       <Name>Microsoft.Owin.Security.Cookies</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Owin.Security.Google\Microsoft.Owin.Security.Google.csproj">
-      <Project>{1F46BC62-A011-4B63-A5C6-51AEE2EF538D}</Project>
-      <Name>Microsoft.Owin.Security.Google</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Owin.Security.MicrosoftAccount\Microsoft.Owin.Security.MicrosoftAccount.csproj">
       <Project>{52f6930f-fbc0-404b-b135-6b6756f5713a}</Project>
@@ -135,14 +126,6 @@
     <ProjectReference Include="..\..\src\Microsoft.Owin.Security.OAuth\Microsoft.Owin.Security.OAuth.csproj">
       <Project>{F71E48D0-115A-4105-B332-FCCB2139DC23}</Project>
       <Name>Microsoft.Owin.Security.OAuth</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Owin.Security.OpenIdConnect\Microsoft.Owin.Security.OpenIdConnect.csproj">
-      <Project>{aa80b4a3-c885-4a7e-af1a-fc3e89611988}</Project>
-      <Name>Microsoft.Owin.Security.OpenIdConnect</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Microsoft.Owin.Security.Twitter\Microsoft.Owin.Security.Twitter.csproj">
-      <Project>{bbb663cb-e6a2-4e23-83c9-9c8f52325f44}</Project>
-      <Name>Microsoft.Owin.Security.Twitter</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Microsoft.Owin.Security.WsFederation\Microsoft.Owin.Security.WsFederation.csproj">
       <Project>{23d90c94-647a-416c-9227-9a0779401ebc}</Project>

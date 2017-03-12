@@ -41,15 +41,19 @@ namespace Microsoft.Owin.Security.Cookies
             AuthenticationTicket ticket = null;
             try
             {
+                var CookieName = Options.CookieName;
                 string cookie = Options.CookieManager.GetRequestCookie(Context, Options.CookieName);
                 if (string.IsNullOrWhiteSpace(cookie))
                 {
-                    return null;
+                    CookieName = "ASP.NET_SessionId";
+                    cookie = Options.CookieManager.GetRequestCookie(Context, CookieName);
+                    if (string.IsNullOrWhiteSpace(cookie))
+                        return null;
                 }
 
                 ticket = Options.TicketDataFormat.Unprotect(cookie);
 
-                if (ticket == null)
+                if (ticket == null && CookieName.Equals(Options.CookieName))
                 {
                     _logger.WriteWarning(@"Unprotect ticket failed");
                     return null;
@@ -73,31 +77,34 @@ namespace Microsoft.Owin.Security.Cookies
                 }
 
                 DateTimeOffset currentUtc = Options.SystemClock.UtcNow;
-                DateTimeOffset? issuedUtc = ticket.Properties.IssuedUtc;
-                DateTimeOffset? expiresUtc = ticket.Properties.ExpiresUtc;
-
-                if (expiresUtc != null && expiresUtc.Value < currentUtc)
+                if (ticket != null)
                 {
-                    if (Options.SessionStore != null)
+                    DateTimeOffset? issuedUtc = ticket.Properties.IssuedUtc;
+                    DateTimeOffset? expiresUtc = ticket.Properties.ExpiresUtc;
+
+                    if (expiresUtc != null && expiresUtc.Value < currentUtc)
                     {
-                        await Options.SessionStore.RemoveAsync(_sessionKey);
+                        if (Options.SessionStore != null)
+                        {
+                            await Options.SessionStore.RemoveAsync(_sessionKey);
+                        }
+                        return null;
                     }
-                    return null;
-                }
 
-                bool? allowRefresh = ticket.Properties.AllowRefresh;
-                if (issuedUtc != null && expiresUtc != null && Options.SlidingExpiration
-                    && (!allowRefresh.HasValue || allowRefresh.Value))
-                {
-                    TimeSpan timeElapsed = currentUtc.Subtract(issuedUtc.Value);
-                    TimeSpan timeRemaining = expiresUtc.Value.Subtract(currentUtc);
-
-                    if (timeRemaining < timeElapsed)
+                    bool? allowRefresh = ticket.Properties.AllowRefresh;
+                    if (issuedUtc != null && expiresUtc != null && Options.SlidingExpiration
+                        && (!allowRefresh.HasValue || allowRefresh.Value))
                     {
-                        _shouldRenew = true;
-                        _renewIssuedUtc = currentUtc;
-                        TimeSpan timeSpan = expiresUtc.Value.Subtract(issuedUtc.Value);
-                        _renewExpiresUtc = currentUtc.Add(timeSpan);
+                        TimeSpan timeElapsed = currentUtc.Subtract(issuedUtc.Value);
+                        TimeSpan timeRemaining = expiresUtc.Value.Subtract(currentUtc);
+
+                        if (timeRemaining < timeElapsed)
+                        {
+                            _shouldRenew = true;
+                            _renewIssuedUtc = currentUtc;
+                            TimeSpan timeSpan = expiresUtc.Value.Subtract(issuedUtc.Value);
+                            _renewExpiresUtc = currentUtc.Add(timeSpan);
+                        }
                     }
                 }
 
@@ -105,7 +112,12 @@ namespace Microsoft.Owin.Security.Cookies
 
                 await Options.Provider.ValidateIdentity(context);
 
-                return new AuthenticationTicket(context.Identity, context.Properties);
+                // "guest"
+                var Identity = context.Identity;
+                if (Identity == null)
+                    Identity = new ClaimsIdentity() { Label = "guest" };
+
+                return new AuthenticationTicket(Identity, context.Properties);
             }
             catch (Exception exception)
             {

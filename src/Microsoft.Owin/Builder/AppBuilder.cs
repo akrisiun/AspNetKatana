@@ -61,8 +61,7 @@ namespace Microsoft.Owin.Builder
         /// components during the startup sequence. 
         /// </summary>
         /// <returns>Returns <see cref="T:System.Collections.Generic.IDictionary`2" />.</returns>
-        public IDictionary<string, object> Properties
-        {
+        public IDictionary<string, object> Properties {
             get { return _properties; }
         }
 
@@ -173,13 +172,27 @@ namespace Microsoft.Owin.Builder
             foreach (var middleware in _middleware.Reverse())
             {
                 Type neededSignature = middleware.Item1;
-                Delegate middlewareDelegate = middleware.Item2;
-                object[] middlewareArgs = middleware.Item3;
+                app = Convert(neededSignature, app);
 
-                app = Convert(neededSignature, app);
-                object[] invokeParameters = new[] { app }.Concat(middlewareArgs).ToArray();
-                app = middlewareDelegate.DynamicInvoke(invokeParameters);
-                app = Convert(neededSignature, app);
+                try
+                {
+                    Delegate middlewareDelegate = middleware.Item2;
+                    object[] middlewareArgs = middleware.Item3;
+
+                    object[] invokeParameters = new[] { app }.Concat(middlewareArgs).ToArray();
+                    app = middlewareDelegate.DynamicInvoke(invokeParameters);
+                    app = Convert(neededSignature, app);
+                }
+                catch (Exception ex)
+                {
+                    if (System.Diagnostics.Debugger.IsAttached)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                    }
+                    else
+                    if (!System.Diagnostics.Debugger.IsLogging())
+                        throw;
+                }
             }
 
             return Convert(signature, app);
